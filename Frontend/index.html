@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ATS Resume Scorer</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="style.css"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+</head>
+<body>
+
+<div class="glow-orb a"></div>
+<div class="glow-orb b"></div>
+
+<div class="container">
+
+  <header>
+    <div class="logo-mark">
+      <div class="logo-icon"></div>
+      <span class="logo-text">ATS<span>Score</span></span>
+    </div>
+    <span class="badge">v2.0 · PDF-Powered</span>
+  </header>
+
+  <section class="hero">
+    <h1>Resume ATS <span class="line2">Intelligence Engine</span></h1>
+    <p>Upload your resume and job description as PDFs. We extract the text, analyze semantic similarity, and score your ATS compatibility.</p>
+  </section>
+
+  <div class="input-grid">
+    <!-- Resume field-wrap — replace the existing one -->
+<div class="field-wrap">
+  <label class="field-label">Resume PDF</label>
+
+  <div class="input-toggle">
+    <button class="toggle-btn active" id="resumeTogglePdf" onclick="switchMode('resume', 'pdf')">📄 PDF Upload</button>
+    <button class="toggle-btn" id="resumeToggleText" onclick="switchMode('resume', 'text')">✏️ Paste Text</button>
+  </div>
+
+  <!-- PDF mode -->
+  <div id="resumePdfMode">
+    <div class="drop-zone" id="resumeDropZone">
+      <input type="file" id="resumeFile" accept=".pdf" hidden />
+      <div class="drop-icon">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/>
+          <line x1="12" y1="18" x2="12" y2="12"/>
+          <line x1="9" y1="15" x2="15" y2="15"/>
+        </svg>
+      </div>
+      <p class="drop-title">Drop your resume here</p>
+      <p class="drop-sub">or <span class="drop-link" onclick="document.getElementById('resumeFile').click()">browse file</span></p>
+      <p class="drop-hint">PDF only · Max 10MB</p>
+      <div class="file-chip" id="resumeChip" style="display:none;">
+        <span class="chip-icon">📄</span>
+        <span class="chip-name" id="resumeChipName"></span>
+        <button class="chip-remove" onclick="clearFile('resume')">✕</button>
+      </div>
+      <div class="extract-status" id="resumeStatus"></div>
+    </div>
+  </div>
+
+  <!-- Text mode -->
+  <div id="resumeTextMode" style="display:none;">
+    <textarea id="resumeTextarea" placeholder="Paste your full resume content here — skills, experience, education, projects..."></textarea>
+    <div class="char-count" id="resumeCharCount">0 characters</div>
+  </div>
+</div>
+
+    <div class="field-wrap">
+  <label class="field-label jd-label">Job Description</label>
+
+  <!-- Toggle -->
+  <div class="input-toggle">
+    <button class="toggle-btn active" id="jdTogglePdf" onclick="switchMode('jd', 'pdf')">📄 PDF Upload</button>
+    <button class="toggle-btn" id="jdToggleText" onclick="switchMode('jd', 'text')">✏️ Paste Text</button>
+  </div>
+
+  <!-- PDF mode -->
+  <div id="jdPdfMode">
+    <div class="drop-zone jd-zone" id="jdDropZone">
+      <input type="file" id="jdFile" accept=".pdf" hidden />
+      <div class="drop-icon">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/>
+          <line x1="16" y1="13" x2="8" y2="13"/>
+          <line x1="16" y1="17" x2="8" y2="17"/>
+          <polyline points="10 9 9 9 8 9"/>
+        </svg>
+      </div>
+      <p class="drop-title">Drop job description here</p>
+      <p class="drop-sub">or <span class="drop-link" onclick="document.getElementById('jdFile').click()">browse file</span></p>
+      <p class="drop-hint">PDF only · Max 10MB</p>
+      <div class="file-chip" id="jdChip" style="display:none;">
+        <span class="chip-icon">📋</span>
+        <span class="chip-name" id="jdChipName"></span>
+        <button class="chip-remove" onclick="clearFile('jd')">✕</button>
+      </div>
+      <div class="extract-status" id="jdStatus"></div>
+    </div>
+  </div>
+
+  <!-- Text mode -->
+  <div id="jdTextMode" style="display:none;">
+    <textarea id="jdTextarea" placeholder="Paste the job description here — requirements, responsibilities, qualifications..."></textarea>
+    <div class="char-count" id="jdCharCount">0 characters</div>
+  </div>
+</div>
+
+  </div><!-- /.input-grid -->
+
+  <div class="preview-section">
+    <div class="preview-col">
+      <button class="btn-preview" id="resumePreviewBtn" onclick="togglePreview('resume')" style="display:none;">👁 Preview resume text</button>
+      <div class="text-preview" id="resumePreview" style="display:none;"></div>
+    </div>
+    <div class="preview-col">
+      <button class="btn-preview" id="jdPreviewBtn" onclick="togglePreview('jd')" style="display:none;">👁 Preview JD text</button>
+      <div class="text-preview" id="jdPreview" style="display:none;"></div>
+    </div>
+  </div>
+
+  <div class="action-row">
+    <button class="btn-analyze" id="analyzeBtn" onclick="analyze()">
+      <div class="spinner" id="spinner"></div>
+      <span id="btnLabel">Run Analysis</span>
+    </button>
+    <button class="btn-clear" onclick="clearAll()">Clear All</button>
+    <span class="status-text" id="statusText"></span>
+  </div>
+
+  <div class="error-box" id="errorBox"></div>
+
+  <div id="results">
+    <div class="results-header">
+      <h2>Analysis Results</h2>
+      <div class="divider"></div>
+    </div>
+    <div class="score-grid">
+      <div class="score-card main">
+        <div class="score-label">Final ATS Score</div>
+        <div class="score-value" id="finalScore">—<span class="score-unit">/100</span></div>
+        <div class="score-bar-mini"><div class="score-bar-mini-fill bar-purple" id="finalMiniBar"></div></div>
+      </div>
+      <div class="score-card">
+        <div class="score-label">Semantic Match</div>
+        <div class="score-value" id="semanticScore">—<span class="score-unit">/100</span></div>
+        <div class="score-bar-mini"><div class="score-bar-mini-fill bar-teal" id="semanticMiniBar"></div></div>
+      </div>
+      <div class="score-card">
+        <div class="score-label">Keyword Match</div>
+        <div class="score-value" id="keywordScore">—<span class="score-unit">/100</span></div>
+        <div class="score-bar-mini"><div class="score-bar-mini-fill bar-gray" id="keywordMiniBar"></div></div>
+      </div>
+    </div>
+    <div class="bars-card">
+      <div class="bars-title">Score Breakdown</div>
+      <div class="bar-item">
+        <div class="bar-meta"><span class="bar-name">Final ATS Score</span><span class="bar-pct" id="finalPct">0%</span></div>
+        <div class="bar-track"><div class="bar-fill bar-purple" id="finalBar"></div></div>
+      </div>
+      <div class="bar-item">
+        <div class="bar-meta"><span class="bar-name">Semantic Similarity</span><span class="bar-pct" id="semanticPct">0%</span></div>
+        <div class="bar-track"><div class="bar-fill bar-teal" id="semanticBar"></div></div>
+      </div>
+      <div class="bar-item">
+        <div class="bar-meta"><span class="bar-name">Keyword Match</span><span class="bar-pct" id="keywordPct">0%</span></div>
+        <div class="bar-track"><div class="bar-fill bar-gray" id="keywordBar"></div></div>
+      </div>
+    </div>
+    <div class="feedback-card">
+      <div class="feedback-header">
+        <span class="feedback-title">AI Feedback</span>
+        <span class="feedback-model">allenai/OLMo-3-7B</span>
+      </div>
+      <div class="feedback-body" id="feedbackBody">Generating feedback...</div>
+    </div>
+  </div>
+
+  <footer>
+    <p>Powered by FastAPI · SentenceTransformers · OLMo-3-7B · PDF.js</p>
+    <p>localhost:8000/predict/ats</p>
+  </footer>
+
+</div>
+<script src="app.js"></script>
+</body>
+</html>
