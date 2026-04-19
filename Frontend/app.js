@@ -1,6 +1,7 @@
 // ── State ──────────────────────────────────────────────────────────────────
 const state = { resume: null, jd: null };
-const API = '';
+//const API = 'http://localhost:8000'; // for localhost
+const API = ''; //for nginx
 let resumeMode = 'pdf'; // 'pdf' | 'text'
 let jdMode = 'pdf';     // 'pdf' | 'text'
 
