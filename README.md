@@ -14,22 +14,6 @@
 
 ---
 
-## 🖼️ Preview
-
-<p align="center">
-  <img src="images/page1.png" width="45%" />
-  <img src="images/page2.png" width="45%" />
-</p>
-
-<p align="center">
-  <img src="images/page3.png" width="45%" />
-  <img src="images/page4.png" width="45%" />
-</p>
-
-> Replace these image paths with your actual screenshots.
-
----
-
 ## ✨ Features
 
 * 📄 Upload resume & job description (PDF or text)
